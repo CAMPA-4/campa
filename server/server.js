@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 // RUNNING SERVER
 const app = express();
@@ -7,6 +8,12 @@ const PORT = 3000;
 
 app.use(express.json());
 app.use(cors());
+
+app.use('/build', express.static(path.join(__dirname, '../build')));
+
+app.get('/', (req, res) => {
+  return res.status(200).sendFile(path.resolve(__dirname, '../client/index.html'));
+});
 
 // GLOBAL ERROR ROUTE
 app.use((err, req, res, next) => {
