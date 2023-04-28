@@ -20,14 +20,7 @@ module.exports = {
       '/api': 'http://localhost:3000',
     },
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: './client/index.js',
-    }),
 
-    // Add your plugins here
-    // Learn more about plugins from https://webpack.js.org/configuration/plugins/
-  ],
   module: {
     rules: [
       // where we set up transpiling
@@ -47,25 +40,23 @@ module.exports = {
         test: /\.css$/i,
         use: [
           MiniCssExtractPlugin.loader,
-           // best for production . alternative to style-loader
+          // best for production . alternative to style-loader
           // 'style-loader', // best for dev, directly inject css into DOM via <style> tag
           'css-loader', // resolve all css into a single string
           'sass-loader', // transpile sass/scss into cs
           'postcss-loader',
-          
         ],
-
       },
     ],
   },
-
+  mode: process.env.NODE_ENV,
   plugins: [
     new HtmlWebpackPlugin({
       // used to create a index file that is connected to our dynamically generated javascript
       template: './client/index.html',
     }),
     new MiniCssExtractPlugin({
-      filename: "styles.css"
+      filename: 'styles.css',
     }),
   ],
 };
