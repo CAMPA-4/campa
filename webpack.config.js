@@ -6,7 +6,7 @@ const isProduction = process.env.NODE_ENV;
 // console.log(isProduction);
 
 module.exports = {
-  entry: './src/index.js', // where our entry point to the program is
+  entry: './client/index.js', // where our entry point to the program is
   output: {
     path: path.resolve(__dirname, 'build'), // setting up directory name
     filename: 'bundle.js', // this is where our bundle will be, inside the build folder
@@ -22,7 +22,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'index.html',
+      template: './client/index.js',
     }),
 
     // Add your plugins here
@@ -62,7 +62,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       // used to create a index file that is connected to our dynamically generated javascript
-      template: './index.html',
+      template: './client/index.html',
     }),
     new MiniCssExtractPlugin({
       filename: "styles.css"
