@@ -4,7 +4,7 @@ const path = require('path');
 const db = require('../db/mongoDB')
 
 //require routers
-const authRouter = require('./routes/auth')
+const authRouter = require("./routes/auth");
 // RUNNING SERVER
 const app = express();
 const PORT = 3000;
@@ -13,7 +13,7 @@ const PORT = 3000;
 app.use(express.json());
 app.use(cors());
 //create router
-app.use('/api/auth',authrouter)
+app.use("/api/auth", authRouter);
 app.use("/build", express.static(path.join(__dirname, "../build")));
 
 app.get("/", (req, res) => {
