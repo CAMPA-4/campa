@@ -14,7 +14,10 @@ app.use('/build', express.static(path.join(__dirname, '../build')));
 app.get('/', (req, res) => {
   return res.status(200).sendFile(path.resolve(__dirname, '../client/index.html'));
 });
-
+//unknown route handler 
+app.get('*', (req,res) => {
+  res.status(404).json('Unknown route error')
+})
 // GLOBAL ERROR ROUTE
 app.use((err, req, res, next) => {
   const defaultErr = {
