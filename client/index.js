@@ -12,7 +12,6 @@ const router = createBrowserRouter([
     path: '/',
     element: <App />,
   },
-
 ]);
 
 root.render(<RouterProvider router={router} />);

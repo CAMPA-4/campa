@@ -7,6 +7,9 @@ const db = require('../db/mongoDB')
 const app = express();
 const PORT = 3000;
 
+const apiRouter = require('./routes/apiRouter');
+
+
 // connect mongodb server
 
 
@@ -24,6 +27,9 @@ app.get("/", (req, res) => {
 app.get("*", (req, res) => {
   res.status(404).json("Unknown route error");
 });
+
+app.use('/api', apiRouter);
+
 // GLOBAL ERROR ROUTE
 app.use((err, req, res, next) => {
   const defaultErr = {
