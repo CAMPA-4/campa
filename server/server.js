@@ -1,10 +1,14 @@
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const db = require('../db/mongoDB')
 
 // RUNNING SERVER
 const app = express();
 const PORT = 3000;
+
+// connect mongodb server
+
 
 app.use(express.json());
 app.use(cors());
