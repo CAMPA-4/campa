@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import { Label, TextInput, Checkbox, Button } from "flowbite-react";
 
 const Signup = () => {
-  const [username, setUsername] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const [repeatpassword, setRepeatpassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
   const [email, setEmail] = useState("");
-  async function signupRequest() {
+  async function signUpHandler(e) {
+    e.preventDefault();
     //construct request body
     const requestBody = {};
     //confirm both password matches
-    if (repeatpassword === password) {
+    if (repeatPassword === password) {
       //if both password are identical then we populate body
-      requestBody.userName = username;
+      requestBody.userName = userName;
       requestBody.password = password;
       requestBody.email = email;
     } else {
@@ -22,7 +23,7 @@ const Signup = () => {
     }
     
     try {
-      const response = await fetch("http://localhost:8080/api/auth/signup", {
+      const response = await fetch("api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,6 +31,7 @@ const Signup = () => {
         body: JSON.stringify(requestBody),
       });
       const data = await response.json();
+      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -40,7 +42,7 @@ const Signup = () => {
       className="absolute top-1/2 left-1/2 bg-primary -translate-x-1/2 -translate-y-1/2 
     flex flex-col gap-4 p-10 
     rounded-lg border-2 border-amber-500"
-      onSubmit={signupRequest}
+      onSubmit={signUpHandler}
     >
       <h1 className="text-xl text-center text-amber-500">SignUp</h1>
       <div>
@@ -68,7 +70,7 @@ const Signup = () => {
           required={true}
           shadow={true}
           className="w-full"
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => setUserName(e.target.value)}
         />
       </div>
       <div>
@@ -85,14 +87,14 @@ const Signup = () => {
       </div>
       <div>
         <div className="mb-2 block">
-          <Label htmlFor="repeat-password" value="Repeat password" />
+          <Label htmlFor="repeat-Password" value="Repeat password" />
         </div>
         <TextInput
-          id="repeat-password"
+          id="repeat-Password"
           type="password"
           required={true}
           shadow={true}
-          onChange={(e) => setRepeatpassword(e.target.value)}
+          onChange={(e) => setRepeatPassword(e.target.value)}
         />
       </div>
       <div className="flex items-center gap-2">

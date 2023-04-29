@@ -11,7 +11,7 @@ const userSchema = new Schema({
   password: {type: String, required: true},
   conversations: [
     {
-      botName: {type: String, unique: true},
+      botName: {type: String},
       messageHistory: [{type: mongoose.ObjectId, ref:'Message'}]
     }
   ]

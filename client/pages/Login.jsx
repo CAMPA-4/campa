@@ -1,25 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Label, TextInput, Checkbox, Button } from 'flowbite-react';
 
-const Login = () => {
-
+const Login = (e) => {
+  //generalize email and username as identification
+  const [identification, setIdentification] = useState("");
+  const [password, setPassword] = useState("");
+  async function loginOnSubmitHandler (e) {
+    e.preventDefault();
+    const requestBody = {
+      identification: identification,
+      password: password
+    }
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+      console.log(response)
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
   <form className="absolute top-1/2 left-1/2 bg-primary -translate-x-1/2 -translate-y-1/2 
   flex flex-col gap-4 p-10
   rounded-lg border-2 border-amber-500"
+  onSubmit={loginOnSubmitHandler}
   >
   <div>
     <div className="mb-2 block">
       <Label
-        htmlFor="email1"
+        htmlFor="id"
         value="Email or Username"
       />
     </div>
     <TextInput
-      id="email1"
-      type="email"
+      id="id"
+      type="text"
       placeholder="Email or Username"
       required={true}
+      onChange={(e) => setIdentification(e.target.value)}
     />
   </div>
   <div>
@@ -34,6 +59,7 @@ const Login = () => {
       type="password"
       required={true}
       placeholder="password"
+      onChange={(e) => setPassword(e.target.value)}
     />
   </div>
   <div className="flex items-center gap-2">
