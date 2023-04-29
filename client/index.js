@@ -6,7 +6,7 @@ import './input.css';
 import App from './App.jsx';
 import ChatDash from './pages/ChatDash.jsx';
 import Login from './pages/Login.jsx';
-import Signup from './pages/Signup.jsx'
+import Signup from './pages/Signup.jsx';
 
 const domNode = document.getElementById('root');
 const root = createRoot(domNode);
@@ -20,13 +20,11 @@ const router = createBrowserRouter([
     path: '/chat',
     element: <ChatDash />,
   },
-    path: '/login',
-    element: <Login />,
-  },
+  { path: '/login', element: <Login /> },
   {
-    path: 'signup',
-    element: <Signup/>
-  }
+    path: '/signup',
+    element: <Signup />,
+  },
 ]);
 
 root.render(<RouterProvider router={router} />);

@@ -12,6 +12,7 @@ const PORT = 3000;
 // connect mongodb server
 app.use(express.json());
 app.use(cors());
+
 //create router
 app.use("/api/auth", authRouter);
 app.use("/build", express.static(path.join(__dirname, "../build")));

@@ -48,6 +48,7 @@ const ChatDash = () => {
   const [convos, setConvos] = useState(Object.keys(converstations));
   const [convosArray, setConvosArray] = useState();
   const [currentConvo, setCurrentConvo] = useState(converstations.joeBiden);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const array = convos.map((instance, key) => {
