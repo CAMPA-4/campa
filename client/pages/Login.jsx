@@ -2,10 +2,19 @@ import React from 'react';
 import { Label, TextInput, Checkbox, Button } from 'flowbite-react';
 
 const Login = () => {
+   async function loginRequest () {
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/login");
+      const data = await response.json()
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
   <form className="absolute top-1/2 left-1/2 bg-primary -translate-x-1/2 -translate-y-1/2 
   flex flex-col gap-4 p-10
-  rounded-lg border-2 border-amber-500">
+  rounded-lg border-2 border-amber-500"
+  onSubmit={loginRequest}>
   <div>
     <div className="mb-2 block">
       <Label
