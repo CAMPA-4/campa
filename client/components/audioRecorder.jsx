@@ -23,11 +23,14 @@ const RecordView = () => {
     clearBlobUrl();
   };
 
-  const sendRecording = (url) =>{
+
+  const afterstopRecording = () => {
+    const audioBlob = fetch(mediaBlobUrl).then((r) => r.blob());
+    const audioFile = new File([mediaBlobUrl], 'voice.wav', { type: 'audio/wav' })
     fetch('/api/uploadAudio', {
         method: 'POST',
         body: {
-            sendAudio: mediaBlobUrl
+            audioFile: audioFile
         }
     })
   }
@@ -60,7 +63,11 @@ const RecordView = () => {
     <div>
       <p>{status}</p>
       <button onClick={startRecording}>Start Recording</button>
-      <button onClick={stopRecording}>Stop and Submit Recording</button>
+      <button onClick={() => {
+        stopRecording()
+        afterstopRecording()
+      }
+      }>Stop and Submit Recording</button>
       <audio src={mediaBlobUrl} controls />
       <button onClick={clearBlobUrl}>Reset Recording</button>
     </div>
