@@ -14,7 +14,7 @@ const Test = (props) => {
     };
 
   return (
-    <div> <RecordView onRecordingComplete={addAudioElement} /> </div>
+    <div> <RecordView/> </div>
   )
 }
 
