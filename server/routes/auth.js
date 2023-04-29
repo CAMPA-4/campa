@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
-
+const authController = require("../controllers/authController")
 //routers for login
-router.get("/login", (req, res) => {
-  return res.status(200).json("we have successfully logged in");
+router.post("/login", authController.loginAccount, (req, res) => {
+  return res.status(200).json(res.locals.foundAccount);
 });
 //routers for signup
-router.post("/signup", (req, res) => {
-  return res.status(200).json("we have successfully signed up");
+router.post("/signup", authController.createAccount,(req, res) => {
+  return res.status(200).json(res.locals.newAccout);
 });
+module.exports = router;
