@@ -24,16 +24,32 @@ const RecordView = () => {
   };
 
 
-  const afterstopRecording = () => {
-    const audioBlob = fetch(mediaBlobUrl).then((r) => r.blob());
-    const audioFile = new File([mediaBlobUrl], 'voice.wav', { type: 'audio/wav' })
-    fetch('/api/uploadAudio', {
+  const afterstopRecording = async () => {
+    try {
+    const audioBlob = await fetch(mediaBlobUrl);
+    console.log("we made audioblob");
+
+    const newBlob = audioBlob.blob();
+    console.log("we made newBlog");
+
+    const audioFile = new File([newBlob], 'voice.wav', { type: 'audio/wav' });
+  
+    const audioForm = new FormData();
+    audioForm.append('file', audioFile);
+    console.log("this is audio form", audioForm);
+    await fetch('/api/uploadAudio', {
         method: 'POST',
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
         body: {
-            audioFile: audioFile
+            audioFile: audioForm
         }
     })
+  } catch (err) {
+  console.log(err);
   }
+}
 
 //   React.useEffect(() => {
 

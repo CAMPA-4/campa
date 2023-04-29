@@ -9,6 +9,7 @@ const { memoryStorage } = require('multer');
 
 const storage = memoryStorage();
 const upload = multer({ storage });
+// const upload = multer();
 
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
@@ -53,8 +54,13 @@ const uploadAudio = (__filename, file) => {
 
 }
 
-router.post('/uploadAudio', upload.single('audioFile'), async (req, res) => {
+const checkAudio = (req, res, next) => {
+  console.log('Checking audioFile in req body', req.body.audioFile);
+}
+
+router.post('/uploadAudio', checkAudio, upload.single('audioFile'), async (req, res) => {
   const filename = 'DIDWEDOIT';
+  console.log("We reached the audio file request");
   const file = req.file.buffer;
   try {
     const link = await uploadAudio(filename, file);
