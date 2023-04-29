@@ -23,11 +23,13 @@ const RecordView = () => {
     clearBlobUrl();
   };
 
-  const sendRecording = (url) =>{
+  stopRecording = () => {
+    const audioBlob = fetch(mediaBlobUrl).then((r) => r.blob());
+    const audioFile = new File([mediaBlobUrl], 'voice.wav', { type: 'audio/wav' })
     fetch('/', {
         method: 'POST',
         body: {
-            sendAudio: mediaBlobUrl
+            audioFile: audioFile
         }
     })
   }
