@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-const AWS = require('aws-sdk');
 const dotenv = require('dotenv');
 const { PutObjectCommand, S3Client } = require("@aws-sdk/client-s3");
 
@@ -18,14 +17,6 @@ const Bucket = process.env.S3_BUCKET;
 
 // const Controller = require('../controllers/Controller');
 const audioController = require('../controllers/audioController');
-
-// const client = new S3Client({
-//   credentials: {
-//     accessKeyId,
-//     secretAccessKey
-//   },
-//   region
-// });
 
 const checkAudio = (req, res, next) => {
   console.log('Checking audioFile in req body', req.body.audioFile);

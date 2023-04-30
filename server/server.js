@@ -23,12 +23,13 @@ app.get("/", (req, res) => {
     .status(200)
     .sendFile(path.resolve(__dirname, "../client/index.html"));
 });
+
+app.use('/api', apiRouter);
+
 //unknown route handler
 app.get("*", (req, res) => {
   res.status(404).json("Unknown route error");
 });
-
-app.use('/api', apiRouter);
 
 // GLOBAL ERROR ROUTE
 app.use((err, req, res, next) => {
