@@ -108,10 +108,14 @@ const Signup = () => {
         <Checkbox id='agree' />
         <Label htmlFor='agree'>
           I agree with the:
-          <a href='/forms' className='text-black dark:text-blue-500'>
-            terms and conditions
-          </a>
+          <span className='text-black dark:text-blue-500'>
+            terms & conditions
+          </span>
         </Label>
+      </div>
+      <div>
+        <span>Already have an account? </span>
+        <a href="/login" className='text-amber-500'>Login</a>
       </div>
       <Button
         className='bg-amber-500 p-2 text-black duration-500 hover:text-lg hover:p-3'
