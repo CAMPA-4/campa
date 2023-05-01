@@ -76,11 +76,15 @@ const Login = (e) => {
         <Checkbox id='remember' />
         <Label htmlFor='remember'>Remember me</Label>
       </div>
+      <div>
+        <span>Dont' have an account? </span>
+        <a href="/signup" className='text-amber-500'>Sign Up!</a>
+      </div>
       <Button
         className='bg-amber-500 p-2 text-black duration-500 hover:text-lg hover:p-3'
         type='submit'
       >
-        Submit
+        Login
       </Button>
     </form>
   );
