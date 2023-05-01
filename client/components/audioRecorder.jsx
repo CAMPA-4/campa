@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import MicRecorder from 'mic-recorder-to-mp3';
-import axios from 'axios';
+
 
 const recorder = new MicRecorder({ bitRate: 128 });
 
@@ -34,14 +34,10 @@ const AudioRecorder = () => {
   
         const formData = new FormData();
         formData.append('audioFile', file);
-        formData.append('key', "test3");
+        formData.append('key', `${file.lastModified}`);
         console.log("FORM-DATA")
         console.log(formData)
-  
-      //   axios.post('/api/upload-audio', formData, {
-      //     headers: {
-      //       'Content-Type': 'multipart/form-data',
-      //     },
+
         const transcript = await fetch('/api/uploadAudio', {
           method: 'POST',
           body: formData
