@@ -8,6 +8,7 @@ const Signup = () => {
   const [repeatPassword, setRepeatPassword] = useState('');
   const [email, setEmail] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [data, setUserData] = useState(null);
 
   async function signUpHandler(e) {
     e.preventDefault();
@@ -25,31 +26,29 @@ const Signup = () => {
       return;
     }
 
-    try {
-      const response = await fetch('api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
-      setIsLoggedIn(true)
-
-      const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
+    fetch('api/auth/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    })
+      .then((response) => response.json())
+      .then((resData) => {
+        setUserData(resData);
+        setIsLoggedIn(true);
+      })
+      .catch(err => console.log(err))
   }
-  
+
   return (
     <form
-    className='absolute top-1/2 left-1/2 bg-primary -translate-x-1/2 -translate-y-1/2 
+      className='absolute top-1/2 left-1/2 bg-primary -translate-x-1/2 -translate-y-1/2 
     flex flex-col gap-4 p-10 
     rounded-lg border-2 border-amber-500'
-    onSubmit={signUpHandler}
+      onSubmit={signUpHandler}
     >
-      {!isLoggedIn ? null : <Navigate to='/chat' />}
+      {!isLoggedIn ? null : <Navigate to='/chat' state={{ data }} />}
 
       <h1 className='text-xl text-center text-amber-500'>SignUp</h1>
       <div>
@@ -115,7 +114,9 @@ const Signup = () => {
       </div>
       <div>
         <span>Already have an account? </span>
-        <a href="/login" className='text-amber-500'>Login</a>
+        <a href='/login' className='text-amber-500'>
+          Login
+        </a>
       </div>
       <Button
         className='bg-amber-500 p-2 text-black duration-500 hover:text-lg hover:p-3'

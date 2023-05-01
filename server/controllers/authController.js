@@ -5,6 +5,7 @@ const saltFactors = 5;
 const bcrypt = require('bcrypt');
 
 authController.createAccount = (req, res, next) => {
+  console.log('creating account controller')
   const {userName, email, password} = req.body;
 
   bcrypt.hash(password, saltFactors, (error, hash) => {
@@ -21,6 +22,7 @@ authController.createAccount = (req, res, next) => {
         password: hash
       })
         .then((people) => {
+          console.log(people)
           res.locals.newAccount = people;
           return next()      
         })

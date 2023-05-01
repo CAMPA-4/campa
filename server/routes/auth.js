@@ -10,6 +10,6 @@ router.post("/login", authController.loginAccount, cookieController.setSSIDCooki
 });
 //routers for signup
 router.post("/signup", authController.createAccount, (req, res) => {
-  return res.status(200).json(res.locals.newAccout);
+  return res.status(200).json(res.locals.newAccount);
 });
 module.exports = router;

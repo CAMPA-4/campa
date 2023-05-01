@@ -14,7 +14,7 @@ const root = createRoot(domNode);
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />,
+    element:  <Login />,
   },
   {
     path: '/chat',
