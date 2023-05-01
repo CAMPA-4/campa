@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
-const { PutObjectCommand, S3Client } = require("@aws-sdk/client-s3");
-const { TranscribeClient, StartTranscriptionJobCommand } = require("@aws-sdk/client-transcribe");
+const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { TranscribeClient, StartTranscriptionJobCommand, GetTranscriptionJobCommand } = require("@aws-sdk/client-transcribe");
 
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
@@ -32,10 +32,11 @@ audioController.uploadAudio = async (req, res, next) => {
     Reference: https://stackoverflow.com/questions/67984373/get-uploaded-object-url-with-javascript-aws-sdk-v3
     */
     const result = await client.send(command);
-    // const link = `https://${bucket}.s3.${region}.amazonaws.com/${req.body.key}`
+    const link = `https://${bucket}.s3.${region}.amazonaws.com/${req.body.key}`
     const linkURI = `s3://${bucket}/${req.body.key}`;
     console.log(linkURI);
     res.locals.linkURI = linkURI;
+    res.locals.link = link;
     return next();
   } catch (err) {
     const errObj = {
@@ -49,13 +50,16 @@ audioController.uploadAudio = async (req, res, next) => {
 
 audioController.transcribeAudio = async (req, res, next) => {
   //https://docs.aws.amazon.com/transcribe/latest/APIReference/API_StartTranscriptionJob.html
+  const key = `${req.body.key}Transcribe`;
   const input = {
-    TranscriptionJobName: `${req.body.key}Transcribe`,
+    TranscriptionJobName: key,
     LanguageCode: "en-US",
     // IdentifyLanguage: true,
     Media: {
       MediaFileUri: res.locals.linkURI,
     },
+    OutputBucketName: bucket,
+    OutputKey: `${req.body.key}Transcribe`,
   };
 
   try {
@@ -63,15 +67,19 @@ audioController.transcribeAudio = async (req, res, next) => {
     const transcribeResponse = await transcribeClient.send(transcribeCommand);
     console.log("Transcription job created, the details:");
     console.log(transcribeResponse.TranscriptionJob);
-    const transcribeJobName = transcribeResponse.TranscriptionJob.transcribeJobName;
-    let isCompleteTranscribeResponse = transcribeResponse;
+    const TranscriptionJobName = transcribeResponse.TranscriptionJob.TranscriptionJobName;
 
-    /* checking if transcript job is completed every 5 seconds. Future implementation would be to utilize Amazon EventBridge and AWS Lambda for event handling
-     https://docs.aws.amazon.com/transcribe/latest/dg/monitoring-events.html
-     https://stackoverflow.com/questions/58451759/lambda-automatically-deletes-transcribe-job-upon-completion
+    /* Problem: transcribe automatically sends a response after transcribeClient.send but it's TranscriptionJobStatus = IS_PENDING.
+    You would have to wait (keep calling getTranscriptJob with the TranscriptJobName to see if status is COMPLETED) till the transcript is complete.
+    Then the server would have to notify the client and send the transcript via Server-Sent-Events (https://stackoverflow.com/questions/34657222/how-to-use-server-sent-events-in-express-js).
+     * Solution Attempt 1: Utilizing Amazon EventBridge to send an API call to notify our server when TranscriptionJobStatus is either COMPLETE OR FAILED,
+      Once transcript job is completed or failed, it can send a request to a URL endpoint.
+        --Unable to use this solution: EventBridge requires that the URL must be https which our localhost isn't and hard to make https
+     * Solution Attempt 2: Making constant getTranscriptJob calls in a while loop until the TranscriptionJobStatus is COMPLETED or FAILED
+        --It works but worries: I'm unsure how long transcribe takes to complete depending on audio length. This might send a superb amount of getTranscriptJob calls that AWS might return a LimitExceededException 
     */
+    let isCompleteTranscribeResponse = transcribeResponse;
     do {
-      console.log('Transcript current status is: ', isCompleteTranscribeResponse.TranscriptionJob.TranscriptionJobStatus);
       if (isCompleteTranscribeResponse.TranscriptionJob.TranscriptionJobStatus === 'FAILED') {
         const errObj = {
           log: "audioController.transcribeAudio transcription job failed",
@@ -81,26 +89,34 @@ audioController.transcribeAudio = async (req, res, next) => {
         return next(errObj);
       } else {
         isCompleteTranscribeResponse = await transcribeClient.send(
-          new GetTranscriptionJob({
-          }));
+          new GetTranscriptionJobCommand({ TranscriptionJobName })
+        );
       }
 
     } while (isCompleteTranscribeResponse.TranscriptionJob.TranscriptionJobStatus != 'COMPLETED');
-
     const transcriptURI = isCompleteTranscribeResponse.TranscriptionJob.Transcript.TranscriptFileUri;
-    const transcript = await fetch(transcriptURI);
-    console.log(transcript);
-    res.locals.transcript = transcript;
+    console.log('This is the complete transcriptResponse', isCompleteTranscribeResponse);
+
+
+    //GETTING THE TRANSCRIPT STRING FROM BUCKET
+    const command = new GetObjectCommand({
+      Bucket: bucket,
+      Key: `${req.body.key}Transcribe`,
+    });
+
+    const transcriptResponse = await client.send(command);
+    console.log(JSON.parse(transcriptResponse.Body));
+    // res.locals.transcript = transcriptResponse.response.results.transcripts.transcript;
+
     return next();
   } catch (err) {
     const errObj = {
       log: "audioController.transcribeAudio had an error" + err,
       status: 400,
-      message: { err: "An error occurred when transcribing the file" },
+      message: { err: "An error occurred when sending transcribe request" },
     };
     return next(errObj);
   }
 }
-
 
 module.exports = audioController;

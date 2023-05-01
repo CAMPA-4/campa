@@ -24,7 +24,7 @@ const checkAudio = (req, res, next) => {
 }
 
 router.post('/uploadAudio', upload.single('audioFile'), audioController.uploadAudio, audioController.transcribeAudio, (req, res) => {
-  res.status(200).send(res.locals.transcript);
+  res.status(200).json({ url: res.locals.link });
 });
 
 module.exports = router;
