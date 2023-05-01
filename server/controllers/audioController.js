@@ -1,11 +1,15 @@
 const dotenv = require('dotenv');
 const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { TranscribeClient, StartTranscriptionJobCommand, GetTranscriptionJobCommand } = require("@aws-sdk/client-transcribe");
+const { Configuration, OpenAIApi } = require("openai");
+
 
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 const region = process.env.S3_REGION;
 const bucket = process.env.S3_BUCKET;
+const chatGPTAPIKEY = process.env.CHATGPT_API_KEY;
+const openAIKey = process.env.OPENAI_KEY;
 
 const clientParams = {
   region,
@@ -14,6 +18,12 @@ const clientParams = {
 
 const client = new S3Client(clientParams);
 const transcribeClient = new TranscribeClient(clientParams);
+
+const configuration = new Configuration({
+  apiKey: openAIKey,
+});
+const openai = new OpenAIApi(configuration);
+
 
 const audioController = {};
 
@@ -120,6 +130,31 @@ audioController.transcribeAudio = async (req, res, next) => {
     };
     return next(errObj);
   }
+}
+
+audioController.chatGPT = async (req, res, next) => {
+  console.log('Sending transcript to chatGPT', res.locals.transcript);
+
+  try {
+    const completion = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: res.locals.transcript }],
+    });
+    console.log('ChatGPT responded', completion);
+
+    const completion_text = completion.data.choices[0].message.content;
+    console.log("This is the completion text", completion_text);
+    res.locals.chatGPT = completion_text;
+    return next();
+  } catch (error) {
+    const errObj = {
+      log: "audioController.chatGPT had an error" + err,
+      status: 400,
+      message: { err: "An error occurred when sending trancript to chatGPT" },
+    };
+    return next(errObj);
+  }
+
 }
 
 module.exports = audioController;
