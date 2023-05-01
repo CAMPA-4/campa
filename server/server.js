@@ -27,9 +27,6 @@ app.get("/", (req, res) => {
 app.use('/api', apiRouter);
 
 //unknown route handler
-app.get("*", (req, res) => {
-  res.status(404).json("Unknown route error");
-});
 
 // GLOBAL ERROR ROUTE
 app.use((err, req, res, next) => {
@@ -41,6 +38,10 @@ app.use((err, req, res, next) => {
   const errorObj = Object.assign({}, defaultErr, err);
   console.log(errorObj.log);
   return res.status(errorObj.status).json(errorObj.message);
+});
+
+app.get("*", (req, res) => {
+  res.status(404).json("Unknown route error");
 });
 
 // SERVER
