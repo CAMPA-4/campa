@@ -15,12 +15,12 @@ const root = createRoot(domNode);
 const router = createBrowserRouter([
   {
     path: '/',
-    element:  <Login />,
+    element: <Login />,
   },
   {
     path: '/test',
-    element: <Test />
-    },
+    element: <Test />,
+  },
   {
     path: '/chat',
     element: <ChatDash />,
@@ -32,7 +32,4 @@ const router = createBrowserRouter([
   },
 ]);
 
-root.render(
-  <RouterProvider router={router} />
-
-);
+root.render(<RouterProvider router={router} />);
