@@ -23,8 +23,8 @@ const checkAudio = (req, res, next) => {
   return next();
 }
 
-router.post('/uploadAudio', upload.single('audioFile'), audioController.uploadAudio, (req, res) => {
-  res.status(200).send(res.locals.link);
+router.post('/uploadAudio', upload.single('audioFile'), audioController.uploadAudio, audioController.transcribeAudio, (req, res) => {
+  res.status(200).send(res.locals.transcript);
 });
 
 module.exports = router;
