@@ -26,12 +26,12 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-const VoiceIdOptions = ['Nicole', 'Olivia', 'Russell', 'Amy', 'Emma', 'Brian', 'Arthur', 'Ivy', 'Joanna', 'Kendra', 'Kimberly', 'Salli', 'Joey', 'Justin', 'Kevin', 'Matthew', 'Ruth', 'Stephen'];
+const VoiceIdOptions = ['Emma', 'Brian', 'Ivy', 'Kendra', 'Kimberly', 'Salli', 'Joey', 'Justin'];
 
 const audioController = {};
 
 audioController.uploadAudio = async (req, res, next) => {
-  console.log("This is the file", req.file.buffer);
+  // console.log("This is the file", req.file.buffer);
   try {
     const command = new PutObjectCommand({
       Key: req.body.key, //request body.key would have the name of the file
@@ -47,7 +47,6 @@ audioController.uploadAudio = async (req, res, next) => {
     const result = await client.send(command);
     const link = `https://${bucket}.s3.${region}.amazonaws.com/${req.body.key}`
     const linkURI = `s3://${bucket}/${req.body.key}`;
-    console.log(linkURI);
     res.locals.linkURI = linkURI;
     res.locals.link = link;
     return next();
@@ -138,24 +137,24 @@ audioController.transcribeAudio = async (req, res, next) => {
 }
 
 audioController.chatGPT = async (req, res, next) => {
-  console.log('Sending transcript to chatGPT', res.locals.transcript);
+  // console.log('Sending transcript to chatGPT', res.locals.transcript);
 
   try {
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: res.locals.transcript }],
     });
-    console.log('ChatGPT responded', completion);
+    // console.log('ChatGPT responded', completion);
 
     const completion_text = completion.data.choices[0].message.content;
-    console.log("This is the completion text", completion_text);
+    // console.log("This is the chatGPT text", completion_text);
     res.locals.chatGPT = completion_text;
     return next();
   } catch (err) {
     const errObj = {
       log: "audioController.chatGPT had an error" + err,
       status: 400,
-      message: { err: "An error occurred when sending trancript to chatGPT" + err },
+      message: { err: "An error occurred when sending trancript to chatGPT" },
     };
     return next(errObj);
   }
@@ -165,6 +164,7 @@ audioController.chatGPT = async (req, res, next) => {
 audioController.pollyAudio = async (req, res, next) => {
   try {
     const voiceID = VoiceIdOptions[Math.round(Math.random() * VoiceIdOptions.length)];
+    // console.log('Starting Polly Audio with chatGPT response', res.locals.chatGPT);
     console.log('This is the voiceID', voiceID);
     const command = new StartSpeechSynthesisTaskCommand({
       Engine: 'standard',
@@ -175,13 +175,13 @@ audioController.pollyAudio = async (req, res, next) => {
     });
 
     const response = await pollyClient.send(command);
-    console.log('This is the synthesisResponse', response);
+    // console.log('This is the synthesisResponse', response);
 
     const synthesisTaskName = response.SynthesisTask.TaskId;
 
     let isCompleteSynthesisResponse = response;
     do {
-      if (isCompleteSynthesisResponse.SynthesisTask.TaskStatus === 'FAILED') {
+      if (isCompleteSynthesisResponse.SynthesisTask.TaskStatus == 'failed') {
         const errObj = {
           log: "audioController.pollyAudio transcription job failed",
           status: 400,
@@ -193,16 +193,17 @@ audioController.pollyAudio = async (req, res, next) => {
           new GetSpeechSynthesisTaskCommand({ TaskId: synthesisTaskName })
         );
       }
-    } while (isCompleteSynthesisResponse.SynthesisTask.TaskStatus != 'COMPLETED');
+    } while (isCompleteSynthesisResponse.SynthesisTask.TaskStatus != 'completed');
     const transcriptURI = isCompleteSynthesisResponse.SynthesisTask.OutputUri;
 
     res.locals.cGPTSpeech = transcriptURI;
+    console.log("Polly completed synthesizing with URI: ", transcriptURI);
     return next();
-  } catch (error) {
+  } catch (err) {
     const errObj = {
       log: "audioController.pollyAudio had an error" + err,
       status: 400,
-      message: { err: "An error occurred when sending sending chatGPT tresponse to AWS Polly" },
+      message: { err: "An error occurred when sending sending chatGPT response to AWS Polly" + err },
     };
     return next(errObj);
   }
