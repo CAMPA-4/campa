@@ -1,7 +1,7 @@
 import React from 'react';
 import AudioRecorder from './audioRecorder.jsx'
 
-const RecModal = ({ micHandlerFunction }) => {
+const RecModal = ({micHandlerFunction, currentConvo, setCurrentConvo, user }) => {
   return (
     <>
       <label htmlFor='my-modal' onClick={micHandlerFunction}>
@@ -15,7 +15,7 @@ const RecModal = ({ micHandlerFunction }) => {
           <h3 className='font-bold text-lg'>
             Recording
           </h3>
-          <AudioRecorder />
+          <AudioRecorder user={user} currentConvo={currentConvo} setCurrentConvo={setCurrentConvo}/>
           <div className='modal-action'>
             <label htmlFor='my-modal' className='btn btn-secondary'>
               STOP

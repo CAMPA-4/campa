@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MicRecorder from 'mic-recorder-to-mp3';
 
 const recorder = new MicRecorder({ bitRate: 128 });
 
-const AudioRecorder = () => {
+const AudioRecorder = ({ setCurrentConvo, currentConvo, user }) => {
+  // console.log('CURRENT CONVO',currentConvo)
+  // console.log('function', setCurrentConvo)
   const [isRecording, setIsRecording] = useState(false);
   const [blobURL, setBlobURL] = useState('');
   const [mp3URL, setMp3URL] = useState('');
+  const [gptResponse, setGptResponse] = useState();
 
   const startRecording = () => {
     recorder
@@ -18,6 +21,7 @@ const AudioRecorder = () => {
   };
 
   const stopRecording = () => {
+    setIsRecording(false)
     recorder
       .stop()
       .getMp3()
@@ -25,33 +29,41 @@ const AudioRecorder = () => {
         try {
           const url = URL.createObjectURL(blob);
           const file = new File(buffer, 'recording.mp3', { type: blob.type });
-          // console.log("FILE")
-          // console.log(file)
           const player = new Audio(URL.createObjectURL(file));
-          // console.log("PLAYER")
-          // console.log(player)
-          // console.log("BUFFER")
-          // console.log(buffer)
           setBlobURL(url);
-          // console.log("BLOG-URL")
-          // console.log(url)
-
           const formData = new FormData();
           formData.append('audioFile', file);
           formData.append('key', `${file.lastModified}`);
-          // console.log("FORM-DATA")
-          // console.log(formData)
 
           const transcript = await fetch('/api/uploadAudio', {
             method: 'POST',
             body: formData,
           });
-          setIsRecording(false);
+          const toJson = await transcript.json();
+          setGptResponse(toJson);
         } catch (err) {
           console.log(err);
         }
       });
   };
+  useEffect(() => {
+    if (gptResponse !== undefined) {
+      console.log('GPTRESPONSE',gptResponse)
+      fetch('/api/chat', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user: user,
+          input: gptResponse.transcript,
+          botName: currentConvo.botName,
+        }),
+      })
+        .then((data) => data.json())
+        .then((res) => setCurrentConvo(res));
+    }
+  }, [gptResponse]);
 
   return (
     <div className='flex align-middle justify-center'>
