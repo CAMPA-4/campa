@@ -50,6 +50,7 @@
     "flowbite-react": "^0.4.4",
     "framer-motion": "^10.12.4",
     "html-webpack-plugin": "^5.5.1",
+    "mic-recorder-to-mp3": "^2.2.2",
     "mini-css-extract-plugin": "^2.7.5",
     "mongoose": "^7.1.0",
     "multer": "^1.4.5-lts.1",

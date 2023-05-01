@@ -24,9 +24,6 @@ app.get("/", (req, res) => {
     .sendFile(path.resolve(__dirname, "../client/index.html"));
 });
 //unknown route handler
-app.get("*", (req, res) => {
-  res.status(404).json("Unknown route error");
-});
 
 app.use('/api', apiRouter);
 
@@ -40,6 +37,10 @@ app.use((err, req, res, next) => {
   const errorObj = Object.assign({}, defaultErr, err);
   console.log(errorObj.log);
   return res.status(errorObj.status).json(errorObj.message);
+});
+
+app.get("*", (req, res) => {
+  res.status(404).json("Unknown route error");
 });
 
 // SERVER

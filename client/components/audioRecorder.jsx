@@ -43,7 +43,7 @@ const AudioRecorder = () => {
       fetch('/api/uploadAudio', {
         method: 'POST',
         headers: {
-          "Content-Type": "audio/mp3",
+          "Content-Type": 'multipart/form-data',
         },
         body: {
           audioFile: file,
