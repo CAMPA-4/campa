@@ -11,7 +11,7 @@ module.exports = {
       audio: '',
       text: input,
     };
-    console.log('USER:',user,' INPUT:',input, ' BOTNAME:', botName)
+    // console.log('USER:',user,' INPUT:',input, ' BOTNAME:', botName)
     User.findOneAndUpdate(
       { userName: user, 'conversations.botName': botName },
       { $push: { 'conversations.$.messageHistory': newMessage } },
@@ -27,21 +27,34 @@ module.exports = {
         next();
       })
       .catch((err) => next({ err }));
-    // console.log("NEW MESSAGE: ",message)
-    // const userFromDB = await User.findOne({ userName: user });
+    
+  },
 
-    // userFromDB.conversations.forEach((convo) => {
-    //   if (convo.botName === botName) {
-    //       convo.messageHistory.push(message);
-    //       res.locals.newMessage = convo
-    //   }
-    // });
-    // userFromDB
-    //   .save()
-    //   .then((updatedUser) => {
-    //     next();
-    //   })
-    //   .catch((err) => next({ err }));
+  postTextBot: async (req, res, next) => {
+    // console.log('input controller')
+    const { user, input, botName, audio } = req.body;
+    const newMessage = {
+      createdBy: botName,
+      audio: audio,
+      text: input,
+    };
+    // console.log('USER:',user,' INPUT:',input, ' BOTNAME:', botName)
+    User.findOneAndUpdate(
+      { userName: user, 'conversations.botName': botName },
+      { $push: { 'conversations.$.messageHistory': newMessage } },
+      { new: true }
+    )
+      .then((updatedUser) => {
+        let updatedConvo;
+        updatedUser.conversations.forEach(convo => {
+          if(convo.botName === botName) updatedConvo = convo
+        })
+        // console.log("UPDATED CONVO",updatedConvo)
+        res.locals.newMessage = updatedConvo;
+        next();
+      })
+      .catch((err) => next({ err }));
+    
   },
 
   getChats: async (req, res, next) => {

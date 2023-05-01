@@ -39,7 +39,7 @@ const ChatBox = ({ currentConvo, user, setCurrentConvo }) => {
     // console.log("CURRENT CONVO",currentConvo)
     const array = currentConvo.messageHistory.map((message) => {
       // console.log(message);
-      if (message.createdBy === 'Paul Vachon') {
+      if (message.createdBy === user) {
         return <UserChatBubble message={message} />;
       } else {
         return <BotChatBubble message={message} />;
@@ -52,7 +52,7 @@ const ChatBox = ({ currentConvo, user, setCurrentConvo }) => {
     // console.log("CURRENT CONVO",currentConvo)
     const array = currentConvo.messageHistory.map((message) => {
       // console.log(message);
-      if (message.createdBy === 'Paul Vachon') {
+      if (message.createdBy === user) {
         return <UserChatBubble message={message} />;
       } else {
         return <BotChatBubble message={message} />;
@@ -65,7 +65,8 @@ const ChatBox = ({ currentConvo, user, setCurrentConvo }) => {
   return (
     <div className=' flex justify-center h-screen mt-8 overflow-scroll'>
       <div className='relative  flex justify-center  align-bottom w-2/3 h-5/6 bg-primary shadow-xl rounded-3xl '>
-        <div className='absolute bottom-6 w-full '>
+      <h1 className='justify-center align-middle text-6xl font-thin mt-8 text-secondary'>CHATBOT</h1>
+        <div className='absolute bottom-6 w-full '> 
           <div className='flex flex-col mx-10 mb-4 '>
             {botMessages}
           </div>

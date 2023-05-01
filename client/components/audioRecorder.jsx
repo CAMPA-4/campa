@@ -62,6 +62,21 @@ const AudioRecorder = ({ setCurrentConvo, currentConvo, user }) => {
       })
         .then((data) => data.json())
         .then((res) => setCurrentConvo(res));
+
+      fetch('/api/chat/bot', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user: user,
+          input: gptResponse.chatGPT,
+          botName: currentConvo.botName,
+          audio: gptResponse.cGPTSpeech
+        }),
+      })
+        .then((data) => data.json())
+        .then((res) => setCurrentConvo(res));
     }
   }, [gptResponse]);
 

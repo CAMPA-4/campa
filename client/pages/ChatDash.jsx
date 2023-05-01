@@ -92,7 +92,7 @@ const ChatDash = (props) => {
           <label htmlFor='my-drawer' className='drawer-overlay '></label>
 
           <ul className='menu p-4 w-80 bg-base-100 text-base-content'>
-            <h3 className='text-white text-xl mb-4'>Conversations</h3>
+            <h3 className='text-primary text-xl mb-4'>Conversations</h3>
             {/* <!-- Sidebar content here --> */}
             {convosArray}
           </ul>
