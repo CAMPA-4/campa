@@ -1,7 +1,6 @@
 import React from 'react';
 
 const BotChatBubble = ({ message }) => {
-  // console.log(message)
   return (
     <div className='chat chat-start w-96 my-2'>
       <div className='chat-image avatar'>
@@ -11,9 +10,10 @@ const BotChatBubble = ({ message }) => {
       </div>
       <div className='chat-header'>
         {message.createdBy}
+        {/*  */}
         <time className='text-xs opacity-50 ml-2'>{new Date(message.time).toLocaleTimeString('en-US')}</time>
       </div>
-      <div className='chat-bubble'>{message}</div>
+      <div className='chat-bubble'>{message.text}</div>
       {/* <div className='chat-footer opacity-50'>Delivered</div> */}
     </div>
   );

@@ -5,16 +5,19 @@ import { useLocation } from 'react-router-dom';
 const ChatDash = (props) => {
   // GRABS STATE FROM REDIRECT
   const {
-    state: { userData },
+    state: { data },
   } = useLocation();
+  // console.log(userData);
+  const [userData, setUserData] = useState(data);
   const [convosArray, setConvosArray] = useState([]);
-  const [currentConvo, setCurrentConvo] = useState(userData.conversations[0]);
+  const [currentConvo, setCurrentConvo] = useState(null);
   const [user, setUser] = useState(userData.userName);
-
+  // console.log('userData:',userData)
+  // console.log('currentconvo:', currentConvo)
   // initilizes conversations tabs
   useEffect(() => {
     if (userData.conversations.length === 0) {
-      console.log('INITILIZING CONVOS');
+      // console.log('INITILIZING CONVOS');
       fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -22,12 +25,11 @@ const ChatDash = (props) => {
         },
         body: JSON.stringify({ user: userData.userName }),
       })
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          console.log('data', data.conversations);
-          const array = data.conversations.map((instance, key) => {
+        .then((response) => response.json())
+        .then((resdata) => {
+          // console.log('RESDATA:', resdata)
+          const array = resdata.conversations.map((instance, key) => {
+            console.log('instance:', instance)
             return (
               <li
                 key={key}
@@ -38,12 +40,13 @@ const ChatDash = (props) => {
               </li>
             );
           });
+          setUserData(resdata)
+          setCurrentConvo(resdata.conversations[0]);
           setConvosArray(array);
-          setCurrentConvo(conversations[0].botName);
         })
         .catch((err) => console.log(err));
     } else {
-      console.log('EXSISTING CONVERSATIONS:', userData.conversations);
+      // console.log('EXSISTING CONVERSATIONS:', userData.conversations);
       const array = userData.conversations.map((instance, key) => {
         return (
           <li
@@ -61,8 +64,9 @@ const ChatDash = (props) => {
 
   const convoHandlerFunction = (botName) => {
     let newConvo;
+    console.log(userData.conversations);
     userData.conversations.forEach((bot) => {
-      if (bot.botName === botName) return newConvo = bot;
+      if (bot.botName === botName) return (newConvo = bot);
     });
     setCurrentConvo(newConvo);
   };
@@ -79,7 +83,13 @@ const ChatDash = (props) => {
           >
             <span class='material-symbols-outlined '>chevron_right</span>
           </label>
-          <ChatBox currentConvo={currentConvo} user={user} setCurrentConvo={setCurrentConvo}/>
+          {currentConvo ? (
+            <ChatBox
+              currentConvo={currentConvo}
+              user={user}
+              setCurrentConvo={setCurrentConvo}
+            />
+          ) : null}
         </div>
         <div className='drawer-side '>
           <label htmlFor='my-drawer' className='drawer-overlay '></label>

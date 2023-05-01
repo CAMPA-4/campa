@@ -31,7 +31,7 @@ const VoiceIdOptions = ['Nicole', 'Olivia', 'Russell', 'Amy', 'Emma', 'Brian', '
 const audioController = {};
 
 audioController.uploadAudio = async (req, res, next) => {
-  console.log(req);
+  console.log("This is the file", req.file.buffer);
   try {
     const command = new PutObjectCommand({
       Key: req.body.key, //request body.key would have the name of the file
@@ -151,11 +151,11 @@ audioController.chatGPT = async (req, res, next) => {
     console.log("This is the completion text", completion_text);
     res.locals.chatGPT = completion_text;
     return next();
-  } catch (error) {
+  } catch (err) {
     const errObj = {
       log: "audioController.chatGPT had an error" + err,
       status: 400,
-      message: { err: "An error occurred when sending trancript to chatGPT" },
+      message: { err: "An error occurred when sending trancript to chatGPT" + err },
     };
     return next(errObj);
   }

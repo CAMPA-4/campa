@@ -35,23 +35,38 @@ const ChatBox = ({ currentConvo, user, setCurrentConvo }) => {
   };
 
   useEffect(() => {
+    // console.log("CURRENT CONVO",currentConvo)
     const array = currentConvo.messageHistory.map((message) => {
-      console.log(message);
+      // console.log(message);
       if (message.createdBy === 'Paul Vachon') {
         return <UserChatBubble message={message} />;
       } else {
         return <BotChatBubble message={message} />;
       }
     });
+    // console.log('created array:', array)
     setBotMessages(array);
   }, [currentConvo]);
+  useEffect(() => {
+    // console.log("CURRENT CONVO",currentConvo)
+    const array = currentConvo.messageHistory.map((message) => {
+      // console.log(message);
+      if (message.createdBy === 'Paul Vachon') {
+        return <UserChatBubble message={message} />;
+      } else {
+        return <BotChatBubble message={message} />;
+      }
+    });
+    // console.log('created array:', array)
+    setBotMessages(array);
+  }, []);
 
   return (
-    <div className=' flex justify-center h-screen mt-8 '>
-      <div className='relative overflow-scroll flex justify-center  align-bottom w-2/3 h-5/6 bg-primary shadow-xl rounded-3xl '>
+    <div className=' flex justify-center h-screen mt-8 overflow-scroll'>
+      <div className='relative  flex justify-center  align-bottom w-2/3 h-5/6 bg-primary shadow-xl rounded-3xl '>
         <div className='absolute bottom-6 w-full '>
           <div className='flex flex-col mx-10 mb-4 '>
-            {botMessages }
+            {botMessages}
           </div>
           <div className='flex justify-center'>
             <form

@@ -8,7 +8,7 @@ const Login = (e) => {
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [signedUp, setSignedUp] = useState(false);
-  const [userData, setUserData] = useState(null);
+  const [data, setUserData] = useState(null);
 
   async function loginOnSubmitHandler(e) {
     e.preventDefault();
@@ -36,8 +36,8 @@ const Login = (e) => {
   }
 
   useEffect(() => {
-    if (userData !== null) setIsLoggedIn(true);
-  }, [userData]);
+    if (data !== null) setIsLoggedIn(true);
+  }, [data]);
 
   return (
     <form
@@ -46,7 +46,7 @@ const Login = (e) => {
     rounded-lg border-2 border-amber-500'
       onSubmit={loginOnSubmitHandler}
     >
-      {!isLoggedIn ? null : <Navigate to='/chat' state={{ userData }} />}
+      {!isLoggedIn ? null : <Navigate to='/chat' state={{ data }} />}
       {!signedUp ? null : <Navigate to='/signup' replace={true} />}
       <div>
         <div className='mb-2 block'>

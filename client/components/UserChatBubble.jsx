@@ -11,6 +11,7 @@ const UserChatBubble = ({message}) => {
       </div>
     </div>
     <div className='chat-header'>
+    {/* new Date(message.time).toLocaleTimeString('en-US') */}
       <time className='text-xs opacity-50 mr-4'>{new Date(message.time).toLocaleTimeString('en-US')}</time>
       {message.createdBy}
     </div>
