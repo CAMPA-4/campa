@@ -11,12 +11,12 @@ module.exports = {
   plugins: [require('flowbite/plugin'), require('daisyui')],
   daisyui: {
     styled: true,
-    themes: true,
+    themes: ['pastel'],
     base: true,
     utils: true,
     logs: true,
     rtl: false,
     prefix: '',
-    darkTheme: 'dark',
+    // darkTheme: 'dark',
   },
 };

@@ -13,7 +13,7 @@ const BotChatBubble = ({ message }) => {
         {/*  */}
         <time className='text-xs opacity-50 ml-2'>{new Date(message.time).toLocaleTimeString('en-US')}</time>
       </div>
-      <div className='chat-bubble'>{message.text}</div>
+      <div className='chat-bubble bg-secondary'>{message.text}</div>
       {/* <div className='chat-footer opacity-50'>Delivered</div> */}
     </div>
   );
