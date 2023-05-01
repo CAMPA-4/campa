@@ -11,7 +11,7 @@ module.exports = {
       audio: '',
       text: input,
     };
-
+    console.log('USER:',user,' INPUT:',input, ' BOTNAME:', botName)
     User.findOneAndUpdate(
       { userName: user, 'conversations.botName': botName },
       { $push: { 'conversations.$.messageHistory': newMessage } },

@@ -4,10 +4,11 @@ import UserChatBubble from './UserChatBubble.jsx';
 import RecModal from './RecModal.jsx';
 
 const ChatBox = ({ currentConvo, user, setCurrentConvo }) => {
+  // console.log('CURRENTCONVO CHATBOX:', currentConvo)
   const [botMessages, setBotMessages] = useState();
   const [textBoxValue, setTexBoxValue] = useState('');
 
-  const micHandlerFunction = async () => {
+  const micHandlerFunction = async ({ transcript }) => {
     console.log('clicked');
   };
   const inputHandlerFunction = async (event) => {
@@ -79,7 +80,7 @@ const ChatBox = ({ currentConvo, user, setCurrentConvo }) => {
                 className='input  input-bordered  w-full'
                 onChange={inputHandlerFunction}
               />
-              <RecModal micHandlerFunction={micHandlerFunction} />
+              <RecModal currentConvo={currentConvo} setCurrentConvo={setCurrentConvo} user={user} />
             </form>
           </div>
         </div>

@@ -28,7 +28,7 @@ const openai = new OpenAIApi(configuration);
 const audioController = {};
 
 audioController.uploadAudio = async (req, res, next) => {
-  console.log("This is the file", req.file.buffer);
+  // console.log("This is the file", req.file.buffer);
   try {
     const command = new PutObjectCommand({
       Key: req.body.key, //request body.key would have the name of the file
@@ -44,13 +44,13 @@ audioController.uploadAudio = async (req, res, next) => {
     const result = await client.send(command);
     const link = `https://${bucket}.s3.${region}.amazonaws.com/${req.body.key}`
     const linkURI = `s3://${bucket}/${req.body.key}`;
-    console.log(linkURI);
+    // console.log(linkURI);
     res.locals.linkURI = linkURI;
     res.locals.link = link;
     return next();
   } catch (err) {
     const errObj = {
-      log: "audioController.uploadAudio had an error" + err,
+      log: "audioController.uploadAudio had an error " + err,
       status: 400,
       message: { err: "An error occurred when uploading audio file" },
     };
@@ -133,17 +133,17 @@ audioController.transcribeAudio = async (req, res, next) => {
 }
 
 audioController.chatGPT = async (req, res, next) => {
-  console.log('Sending transcript to chatGPT', res.locals.transcript);
+  // console.log('Sending transcript to chatGPT', res.locals.transcript);
 
   try {
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: res.locals.transcript }],
     });
-    console.log('ChatGPT responded', completion);
+    // console.log('ChatGPT responded', completion);
 
     const completion_text = completion.data.choices[0].message.content;
-    console.log("This is the completion text", completion_text);
+    // console.log("This is the completion text", completion_text);
     res.locals.chatGPT = completion_text;
     return next();
   } catch (err) {
