@@ -29,7 +29,7 @@ authController.loginAccount = (req, res, next) => {
     password: password
   })
   .then((account) => {
-    console.log(account)
+    // console.log(account)
     res.locals.foundAccount = account;
     return next();     
   })

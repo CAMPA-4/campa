@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Label, TextInput, Checkbox, Button } from 'flowbite-react';
 import { Navigate } from 'react-router-dom';
 
@@ -8,6 +8,7 @@ const Login = (e) => {
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [signedUp, setSignedUp] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   async function loginOnSubmitHandler(e) {
     e.preventDefault();
@@ -23,18 +24,21 @@ const Login = (e) => {
         },
         body: JSON.stringify(requestBody),
       });
-      console.log(response);
+
       const data = await response.json();
+
       if (data === null) {
-        setSignedUp(true)
+        setSignedUp(true);
       } else {
-        setIsLoggedIn(true);
+        setUserData(data);
       }
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
+
+  useEffect(() => {
+    if (userData !== null) setIsLoggedIn(true);
+  }, [userData]);
+
   return (
     <form
       className='absolute top-1/2 left-1/2 bg-primary -translate-x-1/2 -translate-y-1/2 
@@ -42,7 +46,7 @@ const Login = (e) => {
     rounded-lg border-2 border-amber-500'
       onSubmit={loginOnSubmitHandler}
     >
-      {!isLoggedIn ? null : <Navigate to='/chat' replace={true} />}
+      {!isLoggedIn ? null : <Navigate to='/chat' state={{ userData }} />}
       {!signedUp ? null : <Navigate to='/signup' replace={true} />}
       <div>
         <div className='mb-2 block'>

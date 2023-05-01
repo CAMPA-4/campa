@@ -3,12 +3,12 @@ import BotChatBubble from './BotChatBubble.jsx';
 import UserChatBubble from './UserChatBubble.jsx';
 import RecModal from './RecModal.jsx';
 
-const ChatBox = ({ currentConvo }) => {
+const ChatBox = ({ currentConvo, user, setCurrentConvo }) => {
   const [botMessages, setBotMessages] = useState();
   const [textBoxValue, setTexBoxValue] = useState('');
 
   const micHandlerFunction = async () => {
-    console.log('clicked')
+    console.log('clicked');
   };
   const inputHandlerFunction = async (event) => {
     event.preventDefault();
@@ -18,30 +18,40 @@ const ChatBox = ({ currentConvo }) => {
 
   const submitInputHandlerFunction = async (event) => {
     event.preventDefault();
-    
-    console.log(textBoxValue);
+
+    const data = await fetch('/api/chat', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user: user,
+        input: textBoxValue,
+        botName: currentConvo.botName,
+      }),
+    });
+    const response = await data.json();
+    setCurrentConvo(response);
   };
 
   useEffect(() => {
-    console.log('test', currentConvo);
     const array = currentConvo.messageHistory.map((message) => {
+      console.log(message);
       if (message.createdBy === 'Paul Vachon') {
         return <UserChatBubble message={message} />;
       } else {
         return <BotChatBubble message={message} />;
       }
     });
-
     setBotMessages(array);
-    console.log(botMessages);
   }, [currentConvo]);
 
   return (
-    <div className='flex justify-center'>
-      <div className='relative flex justify-center align-bottom  w-2/3 h-screen bg-primary shadow-primary shadow-xl '>
-        <div className='absolute bottom-10 w-full'>
-          <div className='flex flex-col mx-10 mb-4'>
-            {botMessages ? botMessages : null}
+    <div className=' flex justify-center h-screen mt-8 '>
+      <div className='relative overflow-scroll flex justify-center  align-bottom w-2/3 h-5/6 bg-primary shadow-xl rounded-3xl '>
+        <div className='absolute bottom-6 w-full '>
+          <div className='flex flex-col mx-10 mb-4 '>
+            {botMessages }
           </div>
           <div className='flex justify-center'>
             <form
@@ -54,8 +64,7 @@ const ChatBox = ({ currentConvo }) => {
                 className='input  input-bordered  w-full'
                 onChange={inputHandlerFunction}
               />
-              <RecModal micHandlerFunction={micHandlerFunction}/>
-              
+              <RecModal micHandlerFunction={micHandlerFunction} />
             </form>
           </div>
         </div>

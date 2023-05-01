@@ -3,6 +3,7 @@ const router = express.Router();
 const authController = require("../controllers/authController")
 //routers for login
 router.post("/login", authController.loginAccount, (req, res) => {
+  // console.log(res.locals.foundAccount)
   return res.status(200).json(res.locals.foundAccount);
 });
 //routers for signup

@@ -5,6 +5,8 @@ const db = require('../db/mongoDB')
 
 //require routers
 const authRouter = require("./routes/auth");
+const chatRouter = require("./routes/chatRouter");
+
 // RUNNING SERVER
 const app = express();
 const PORT = 3000;
@@ -15,9 +17,11 @@ app.use(cors());
 
 //create router
 app.use("/api/auth", authRouter);
+app.use('/api/chat', chatRouter)
 app.use("/build", express.static(path.join(__dirname, "../build")));
 
 app.get("/", (req, res) => {
+  // console.log(req)
   return res
     .status(200)
     .sendFile(path.resolve(__dirname, "../client/index.html"));
@@ -28,13 +32,14 @@ app.get("*", (req, res) => {
 });
 // GLOBAL ERROR ROUTE
 app.use((err, req, res, next) => {
+  // console.log(req.body)
   const defaultErr = {
     log: "Express error handler caught unknown middleware error",
     status: 400,
     message: { err: "An error occurred" },
   };
   const errorObj = Object.assign({}, defaultErr, err);
-  console.log(errorObj.log);
+  // console.log(errorObj.log);
   return res.status(errorObj.status).json(errorObj.message);
 });
 
