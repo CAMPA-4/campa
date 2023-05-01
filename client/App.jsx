@@ -2,6 +2,8 @@ import React from 'react';
 import './input.css';
 
 const App = () => {
+
+
   return (
     <div className='flex justify-center align-middle'>
       <div className='mockup-code'>

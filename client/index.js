@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './input.css';
 
 import App from './App.jsx';
+import Test from './pages/Test.jsx';
 import ChatDash from './pages/ChatDash.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
     element:  <Login />,
   },
   {
+    path: '/test',
+    element: <Test />
+    },
+  {
     path: '/chat',
     element: <ChatDash />,
   },
@@ -27,4 +32,7 @@ const router = createBrowserRouter([
   },
 ]);
 
-root.render(<RouterProvider router={router} />);
+root.render(
+  <RouterProvider router={router} />
+
+);

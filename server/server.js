@@ -13,6 +13,9 @@ const chatRouter = require("./routes/chatRouter");
 const app = express();
 const PORT = 3000;
 
+const apiRouter = require('./routes/apiRouter');
+
+
 // connect mongodb server
 app.use(express.json());
 app.use(cors());
@@ -29,21 +32,26 @@ app.get("/", (req, res) => {
   return res.sendFile(path.resolve(__dirname, "../client/index.html"));
 });
 
+
+app.use('/api', apiRouter);
+
 //unknown route handler
-app.get("*", (req, res) => {
-  res.status(404).json("Unknown route error");
-});
+
 // GLOBAL ERROR ROUTE
 app.use((err, req, res, next) => {
   // console.log(req.body)
   const defaultErr = {
     log: "Express error handler caught unknown middleware error",
     status: 400,
-    message: { err: "An error occurred" },
+    message: { err: "An error occurred unknown one" },
   };
   const errorObj = Object.assign({}, defaultErr, err);
   // console.log(errorObj.log);
   return res.status(errorObj.status).json(errorObj.message);
+});
+
+app.get("*", (req, res) => {
+  res.status(404).json("Unknown route error");
 });
 
 // SERVER
