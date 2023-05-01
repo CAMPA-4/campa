@@ -1,6 +1,7 @@
 const dotenv = require('dotenv');
 const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { TranscribeClient, StartTranscriptionJobCommand, GetTranscriptionJobCommand } = require("@aws-sdk/client-transcribe");
+const { PollyClient, StartSpeechSynthesisTaskCommand, GetSpeechSynthesisTaskCommand } = require("@aws-sdk/client-polly");
 const { Configuration, OpenAIApi } = require("openai");
 
 
@@ -8,7 +9,7 @@ const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 const region = process.env.S3_REGION;
 const bucket = process.env.S3_BUCKET;
-const chatGPTAPIKEY = process.env.CHATGPT_API_KEY;
+// const chatGPTAPIKEY = process.env.CHATGPT_API_KEY;
 const openAIKey = process.env.OPENAI_KEY;
 
 const clientParams = {
@@ -18,12 +19,14 @@ const clientParams = {
 
 const client = new S3Client(clientParams);
 const transcribeClient = new TranscribeClient(clientParams);
+const pollyClient = new PollyClient(clientParams);
 
 const configuration = new Configuration({
   apiKey: openAIKey,
 });
 const openai = new OpenAIApi(configuration);
 
+const VoiceIdOptions = ['Nicole', 'Olivia', 'Russell', 'Amy', 'Emma', 'Brian', 'Arthur', 'Ivy', 'Joanna', 'Kendra', 'Kimberly', 'Salli', 'Joey', 'Justin', 'Kevin', 'Matthew', 'Ruth', 'Stephen'];
 
 const audioController = {};
 
@@ -56,6 +59,7 @@ audioController.uploadAudio = async (req, res, next) => {
     };
     return next(errObj);
   }
+
 }
 
 audioController.transcribeAudio = async (req, res, next) => {
@@ -130,6 +134,7 @@ audioController.transcribeAudio = async (req, res, next) => {
     };
     return next(errObj);
   }
+
 }
 
 audioController.chatGPT = async (req, res, next) => {
@@ -151,6 +156,53 @@ audioController.chatGPT = async (req, res, next) => {
       log: "audioController.chatGPT had an error" + err,
       status: 400,
       message: { err: "An error occurred when sending trancript to chatGPT" },
+    };
+    return next(errObj);
+  }
+
+}
+
+audioController.pollyAudio = async (req, res, next) => {
+  try {
+    const voiceID = VoiceIdOptions[Math.round(Math.random() * VoiceIdOptions.length)];
+    console.log('This is the voiceID', voiceID);
+    const command = new StartSpeechSynthesisTaskCommand({
+      Engine: 'standard',
+      OutputFormat: 'mp3',
+      OutputS3BucketName: bucket,
+      Text: res.locals.chatGPT,
+      VoiceId: voiceID,
+    });
+
+    const response = await pollyClient.send(command);
+    console.log('This is the synthesisResponse', response);
+
+    const synthesisTaskName = response.SynthesisTask.TaskId;
+
+    let isCompleteSynthesisResponse = response;
+    do {
+      if (isCompleteSynthesisResponse.SynthesisTask.TaskStatus === 'FAILED') {
+        const errObj = {
+          log: "audioController.pollyAudio transcription job failed",
+          status: 400,
+          message: { err: "An error occurred when synthesizing the text to speech" },
+        };
+        return next(errObj);
+      } else {
+        isCompleteSynthesisResponse = await pollyClient.send(
+          new GetSpeechSynthesisTaskCommand({ TaskId: synthesisTaskName })
+        );
+      }
+    } while (isCompleteSynthesisResponse.SynthesisTask.TaskStatus != 'COMPLETED');
+    const transcriptURI = isCompleteSynthesisResponse.SynthesisTask.OutputUri;
+
+    res.locals.cGPTSpeech = transcriptURI;
+    return next();
+  } catch (error) {
+    const errObj = {
+      log: "audioController.pollyAudio had an error" + err,
+      status: 400,
+      message: { err: "An error occurred when sending sending chatGPT tresponse to AWS Polly" },
     };
     return next(errObj);
   }
