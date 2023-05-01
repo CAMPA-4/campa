@@ -18,7 +18,7 @@ const transcribeClient = new TranscribeClient(clientParams);
 const audioController = {};
 
 audioController.uploadAudio = async (req, res, next) => {
-  // console.log(req);
+  console.log(req);
   try {
     const command = new PutObjectCommand({
       Key: req.body.key, //request body.key would have the name of the file
@@ -34,7 +34,7 @@ audioController.uploadAudio = async (req, res, next) => {
     const result = await client.send(command);
     const link = `https://${bucket}.s3.${region}.amazonaws.com/${req.body.key}`
     const linkURI = `s3://${bucket}/${req.body.key}`;
-    // console.log(linkURI);
+    console.log(linkURI);
     res.locals.linkURI = linkURI;
     res.locals.link = link;
     return next();

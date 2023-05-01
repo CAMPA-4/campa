@@ -17,42 +17,40 @@ const AudioRecorder = () => {
   };
 
   const stopRecording = () => {
-    recorder.stop().getMp3().then(([buffer, blob]) => {
-      const url = URL.createObjectURL(blob);
-      const file = new File(buffer, 'recording.mp3', {type: blob.type})
-      console.log("FILE")
-      console.log(file)
-      const player = new Audio(URL.createObjectURL(file));
-      console.log("PLAYER")
-      console.log(player)
-      console.log("BUFFER")
-      console.log(buffer)
-      setBlobURL(url);
-      console.log("BLOG-URL")
-      console.log(url)
-
-      const formData = new FormData();
-      formData.append('audioFile', file)
-      console.log("FORM-DATA")
-      console.log(formData)
-
-    //   axios.post('/api/upload-audio', formData, {
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data',
-    //     },
-      fetch('/api/uploadAudio', {
-        method: 'POST',
-        headers: {
-          "Content-Type": 'multipart/form-data',
-        },
-        body: {
-          audioFile: file,
-          key: "test1"
-        }
-      });
-      }).then(()=> console.log('SUCCESSFUL'))
-      .catch((e) => console.log(e));
+    recorder.stop().getMp3().then( async ([buffer, blob]) => {
+      try {
+        const url = URL.createObjectURL(blob);
+        const file = new File(buffer, 'recording.mp3', {type: blob.type})
+        console.log("FILE")
+        console.log(file)
+        const player = new Audio(URL.createObjectURL(file));
+        console.log("PLAYER")
+        console.log(player)
+        console.log("BUFFER")
+        console.log(buffer)
+        setBlobURL(url);
+        console.log("BLOG-URL")
+        console.log(url)
+  
+        const formData = new FormData();
+        formData.append('audioFile', file);
+        formData.append('key', "test3");
+        console.log("FORM-DATA")
+        console.log(formData)
+  
+      //   axios.post('/api/upload-audio', formData, {
+      //     headers: {
+      //       'Content-Type': 'multipart/form-data',
+      //     },
+        const transcript = await fetch('/api/uploadAudio', {
+          method: 'POST',
+          body: formData
+        });
         setIsRecording(false);
+      } catch (err) {
+        console.log(err);
+      }
+    });
   };
 
   return (

@@ -19,11 +19,11 @@ const Bucket = process.env.S3_BUCKET;
 const audioController = require('../controllers/audioController');
 
 const checkAudio = (req, res, next) => {
-  console.log('Checking audioFile in req body', req.body.audioFile);
+  console.log('Checking request body for audioFile and key', req.body);
   return next();
 }
 
-router.post('/uploadAudio', upload.single('audioFile'), audioController.uploadAudio, audioController.transcribeAudio, (req, res) => {
+router.post('/uploadAudio', checkAudio, upload.single('audioFile'), audioController.uploadAudio, audioController.transcribeAudio, (req, res) => {
   res.status(200).json({ transcript: res.locals.transcript });
 });
 
