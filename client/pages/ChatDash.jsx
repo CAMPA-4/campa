@@ -12,12 +12,12 @@ const ChatDash = (props) => {
   const [convosArray, setConvosArray] = useState([]);
   const [currentConvo, setCurrentConvo] = useState(null);
   const [user, setUser] = useState(userData.userName);
-  console.log('userData:',userData)
-  console.log('currentconvo:', currentConvo)
+  // console.log('userData:',userData)
+  // console.log('currentconvo:', currentConvo)
   // initilizes conversations tabs
   useEffect(() => {
     if (userData.conversations.length === 0) {
-      console.log('INITILIZING CONVOS');
+      // console.log('INITILIZING CONVOS');
       fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -27,7 +27,7 @@ const ChatDash = (props) => {
       })
         .then((response) => response.json())
         .then((resdata) => {
-          console.log('RESDATA:', resdata)
+          // console.log('RESDATA:', resdata)
           const array = resdata.conversations.map((instance, key) => {
             console.log('instance:', instance)
             return (
@@ -46,7 +46,7 @@ const ChatDash = (props) => {
         })
         .catch((err) => console.log(err));
     } else {
-      console.log('EXSISTING CONVERSATIONS:', userData.conversations);
+      // console.log('EXSISTING CONVERSATIONS:', userData.conversations);
       const array = userData.conversations.map((instance, key) => {
         return (
           <li

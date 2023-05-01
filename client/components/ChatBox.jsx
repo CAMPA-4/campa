@@ -35,7 +35,7 @@ const ChatBox = ({ currentConvo, user, setCurrentConvo }) => {
   };
 
   useEffect(() => {
-    console.log("CURRENT CONVO",currentConvo)
+    // console.log("CURRENT CONVO",currentConvo)
     const array = currentConvo.messageHistory.map((message) => {
       // console.log(message);
       if (message.createdBy === 'Paul Vachon') {
@@ -48,7 +48,7 @@ const ChatBox = ({ currentConvo, user, setCurrentConvo }) => {
     setBotMessages(array);
   }, [currentConvo]);
   useEffect(() => {
-    console.log("CURRENT CONVO",currentConvo)
+    // console.log("CURRENT CONVO",currentConvo)
     const array = currentConvo.messageHistory.map((message) => {
       // console.log(message);
       if (message.createdBy === 'Paul Vachon') {

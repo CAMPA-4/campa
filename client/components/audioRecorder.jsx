@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import MicRecorder from 'mic-recorder-to-mp3';
 
-
 const recorder = new MicRecorder({ bitRate: 128 });
 
 const AudioRecorder = () => {
@@ -10,64 +9,68 @@ const AudioRecorder = () => {
   const [mp3URL, setMp3URL] = useState('');
 
   const startRecording = () => {
-    recorder.start().then(() => {
-      setIsRecording(true);
-    })
-    .catch((e) => console.error(e));
+    recorder
+      .start()
+      .then(() => {
+        setIsRecording(true);
+      })
+      .catch((e) => console.error(e));
   };
 
   const stopRecording = () => {
-    recorder.stop().getMp3().then( async ([buffer, blob]) => {
-      try {
-        const url = URL.createObjectURL(blob);
-        const file = new File(buffer, 'recording.mp3', {type: blob.type})
-        console.log("FILE")
-        console.log(file)
-        const player = new Audio(URL.createObjectURL(file));
-        console.log("PLAYER")
-        console.log(player)
-        console.log("BUFFER")
-        console.log(buffer)
-        setBlobURL(url);
-        console.log("BLOG-URL")
-        console.log(url)
-  
-        const formData = new FormData();
-        formData.append('audioFile', file);
-        formData.append('key', `${file.lastModified}`);
-        console.log("FORM-DATA")
-        console.log(formData)
+    recorder
+      .stop()
+      .getMp3()
+      .then(async ([buffer, blob]) => {
+        try {
+          const url = URL.createObjectURL(blob);
+          const file = new File(buffer, 'recording.mp3', { type: blob.type });
+          // console.log("FILE")
+          // console.log(file)
+          const player = new Audio(URL.createObjectURL(file));
+          // console.log("PLAYER")
+          // console.log(player)
+          // console.log("BUFFER")
+          // console.log(buffer)
+          setBlobURL(url);
+          // console.log("BLOG-URL")
+          // console.log(url)
 
-        const transcript = await fetch('/api/uploadAudio', {
-          method: 'POST',
-          body: formData
-        });
-        setIsRecording(false);
-      } catch (err) {
-        console.log(err);
-      }
-    });
+          const formData = new FormData();
+          formData.append('audioFile', file);
+          formData.append('key', `${file.lastModified}`);
+          // console.log("FORM-DATA")
+          // console.log(formData)
+
+          const transcript = await fetch('/api/uploadAudio', {
+            method: 'POST',
+            body: formData,
+          });
+          setIsRecording(false);
+        } catch (err) {
+          console.log(err);
+        }
+      });
   };
 
   return (
-    <div>
+    <div className='flex align-middle justify-center'>
+      {blobURL && <audio controls src={blobURL} />}
+      {mp3URL && <audio controls src={mp3URL} />}
       {isRecording ? (
-        <button onClick={stopRecording}>Stop Recording</button>
+        <button className='btn btn-secondary' onClick={stopRecording}>
+          Stop Recording
+        </button>
       ) : (
-        <button onClick={startRecording}>Start Recording</button>
-      )}
-      {blobURL && (
-        <audio controls src={blobURL} />
-      )}
-      {mp3URL && (
-        <audio controls src={mp3URL} />
+        <button className='btn btn-primary' onClick={startRecording}>
+          Start Recording
+        </button>
       )}
     </div>
   );
 };
 
 export default AudioRecorder;
-
 
 //import './App.css';
 // import axios from "axios";
@@ -141,22 +144,7 @@ export default AudioRecorder;
 
 // export default AudioRecorder;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-///BRAND NEW 
+///BRAND NEW
 
 // const AudioRecorder = () => {
 //   navigator.mediaDevices.getUserMedia({audio:true}).then(stream => handlerFunction(stream))
@@ -177,12 +165,11 @@ export default AudioRecorder;
 //     }
 //   }
 
-  
 //   const record = () => {
 //     console.log('clicked')
 //     let audioChunks = []
 //     rec.start()
-    
+
 //   }
 
 //   const stopRecord = () => {
@@ -191,7 +178,6 @@ export default AudioRecorder;
 //     stop.disabled = true
 //     rec.stop()
 //   }
-
 
 //   return(
 //     <div>
@@ -203,7 +189,6 @@ export default AudioRecorder;
 // }
 
 // export default AudioRecorder;
-
 
 // import React, { useState } from "react";
 // import ReactDOM from "react-dom/client";
@@ -234,12 +219,11 @@ export default AudioRecorder;
 //       // setUrl(clearBlobUrl);
 //       clearBlobUrl();
 //     };
-    
 
 //     // async function submitRecording (file) {
 //     //     try {
 //     //         await fetch('/', { file }, {
-    
+
 //     //         });
 //     //         setUr();
 //     //     } catch (err){
@@ -259,9 +243,6 @@ export default AudioRecorder;
 
 // export default RecordView;
 
-
-
-
 // import { useReactMediaRecorder } from "react-media-recorder";
 // import React, { useState } from "react";
 
@@ -275,7 +256,7 @@ export default AudioRecorder;
 //   } = useReactMediaRecorder(
 //     {
 //         audio: true
-//         // blobPropertyBag: {type: "audio/mp3" 
+//         // blobPropertyBag: {type: "audio/mp3"
 //     }
 // );
 
@@ -287,7 +268,6 @@ export default AudioRecorder;
 //     clearBlobUrl();
 //   };
 
-
 //   const afterstopRecording = async () => {
 //     try {
 //     const audioBlob = await fetch(mediaBlobUrl);
@@ -297,7 +277,7 @@ export default AudioRecorder;
 //     console.log("we made newBlog", newBlob);
 
 //     const audioFile = new File([newBlob], 'voice.wav', { type: 'audio/wav' });
-  
+
 //     const audioForm = new FormData();
 
 //     audioForm.append('file', audioFile);
