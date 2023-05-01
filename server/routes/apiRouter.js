@@ -18,12 +18,12 @@ const checkAudio = (req, res, next) => {
   return next();
 }
 
-router.post('/uploadAudio', checkAudio, upload.single('audioFile'), audioController.uploadAudio, audioController.transcribeAudio, audioController.chatGPT, (req, res) => {
+router.post('/uploadAudio', upload.single('audioFile'), audioController.uploadAudio, audioController.transcribeAudio, audioController.chatGPT, audioController.pollyAudio, (req, res) => {
   res.status(200).json({
     link: res.locals.link,
     transcript: res.locals.transcript,
     chatGPT: res.locals.chatGPT,
-    // cGPTSpeech: res.locals.cGPTSpeech,
+    cGPTSpeech: res.locals.cGPTSpeech,
   });
 });
 
