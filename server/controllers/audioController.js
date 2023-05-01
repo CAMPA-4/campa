@@ -18,7 +18,7 @@ const transcribeClient = new TranscribeClient(clientParams);
 const audioController = {};
 
 audioController.uploadAudio = async (req, res, next) => {
-  console.log(req);
+  // console.log(req);
   try {
     const command = new PutObjectCommand({
       Key: req.body.key, //request body.key would have the name of the file
@@ -34,7 +34,7 @@ audioController.uploadAudio = async (req, res, next) => {
     const result = await client.send(command);
     const link = `https://${bucket}.s3.${region}.amazonaws.com/${req.body.key}`
     const linkURI = `s3://${bucket}/${req.body.key}`;
-    console.log(linkURI);
+    // console.log(linkURI);
     res.locals.linkURI = linkURI;
     res.locals.link = link;
     return next();
@@ -65,8 +65,8 @@ audioController.transcribeAudio = async (req, res, next) => {
   try {
     const transcribeCommand = new StartTranscriptionJobCommand(input);
     const transcribeResponse = await transcribeClient.send(transcribeCommand);
-    console.log("Transcription job created, the details:");
-    console.log(transcribeResponse.TranscriptionJob);
+    // console.log("Transcription job created, the details:");
+    // console.log(transcribeResponse.TranscriptionJob);
     const TranscriptionJobName = transcribeResponse.TranscriptionJob.TranscriptionJobName;
 
     /* Problem: transcribe automatically sends a response after transcribeClient.send but it's TranscriptionJobStatus = IS_PENDING.
@@ -95,18 +95,21 @@ audioController.transcribeAudio = async (req, res, next) => {
 
     } while (isCompleteTranscribeResponse.TranscriptionJob.TranscriptionJobStatus != 'COMPLETED');
     const transcriptURI = isCompleteTranscribeResponse.TranscriptionJob.Transcript.TranscriptFileUri;
-    console.log('This is the complete transcriptResponse', isCompleteTranscribeResponse);
 
 
     //GETTING THE TRANSCRIPT STRING FROM BUCKET
     const command = new GetObjectCommand({
       Bucket: bucket,
       Key: `${req.body.key}Transcribe`,
+      ResponseContentType: "application/json",
     });
 
-    const transcriptResponse = await client.send(command);
-    console.log(JSON.parse(transcriptResponse.Body));
-    // res.locals.transcript = transcriptResponse.response.results.transcripts.transcript;
+    //convert the body to string then parse as a JSON object for v3
+    const response = await client.send(command);
+    const transcriptResponse = await response.Body.transformToString();
+    const finalResponse = JSON.parse(transcriptResponse);
+    res.locals.transcript = finalResponse.results.transcripts[0].transcript;
+    // console.log('The transcript', res.locals.transcript);
 
     return next();
   } catch (err) {
