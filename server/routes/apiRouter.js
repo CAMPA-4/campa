@@ -10,11 +10,6 @@ const { memoryStorage } = require('multer');
 const storage = memoryStorage();
 const upload = multer({ storage });
 
-const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-const region = process.env.S3_REGION;
-const Bucket = process.env.S3_BUCKET;
-
 // const Controller = require('../controllers/Controller');
 const audioController = require('../controllers/audioController');
 
@@ -23,8 +18,13 @@ const checkAudio = (req, res, next) => {
   return next();
 }
 
-router.post('/uploadAudio', checkAudio, upload.single('audioFile'), audioController.uploadAudio, audioController.transcribeAudio, (req, res) => {
-  res.status(200).json({ transcript: res.locals.transcript });
+router.post('/uploadAudio', checkAudio, upload.single('audioFile'), audioController.uploadAudio, audioController.transcribeAudio, audioController.chatGPT, (req, res) => {
+  res.status(200).json({
+    link: res.locals.link,
+    transcript: res.locals.transcript,
+    chatGPT: res.locals.chatGPT,
+    // cGPTSpeech: res.locals.cGPTSpeech,
+  });
 });
 
 module.exports = router;

@@ -34,7 +34,7 @@ const AudioRecorder = () => {
   
         const formData = new FormData();
         formData.append('audioFile', file);
-        formData.append('key', "test3");
+        formData.append('key', `${file.lastModified}`);
         console.log("FORM-DATA")
         console.log(formData)
   

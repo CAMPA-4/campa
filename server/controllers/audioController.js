@@ -6,6 +6,9 @@ const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 const region = process.env.S3_REGION;
 const bucket = process.env.S3_BUCKET;
+const chatGPTAPIKEY = process.env.CHATGPT_API_KEY;
+const openAIKey = process.env.OPENAI_KEY;
+const openAIOrganization = process.env.OPENAI_ORGANIZATION;
 
 const clientParams = {
   region,
@@ -120,6 +123,45 @@ audioController.transcribeAudio = async (req, res, next) => {
     };
     return next(errObj);
   }
+}
+
+audioController.chatGPT = async (req, res, next) => {
+  console.log('Sending transcript to chatGPT', res.locals.transcript);
+
+  const url = 'https://api.openai.com/v1/chat/completions ';
+  const options = {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'X-RapidAPI-Key': chatGPTAPIKEY,
+      'X-RapidAPI-Host': 'openai80.p.rapidapi.com'
+    },
+    body: {
+      model: 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'user',
+          content: res.locals.transcript,
+        }
+      ]
+    }
+  };
+
+  try {
+    const response = await fetch(url, options);
+    const result = await response.text();
+    console.log(result);
+    res.locals.chatGPT = result;
+    return next();
+  } catch (error) {
+    const errObj = {
+      log: "audioController.chatGPT had an error" + err,
+      status: 400,
+      message: { err: "An error occurred when sending trancript to chatGPT" },
+    };
+    return next(errObj);
+  }
+
 }
 
 module.exports = audioController;
