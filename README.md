@@ -1,3 +1,7 @@
+# Working Branch `dev`
+```
+git checkout dev
+```
 # Jarvis
 Jarvis is a web application that allows users with visual impairment issues to communicate with Open AI through a complex system
 that involves Amazon Transcribe, Polly, and S3. This enable users to essentially talk with the AI and recieve information through voice.
